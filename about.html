@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — Which Sister Jane Story Are You?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* Same design tokens as index.html, so the two pages feel like one project. */
+  :root {
+    --bg: #F6EFE4;
+    --surface: #FFFBF3;
+    --ink: #2B1B24;
+    --ink-soft: #6B5560;
+    --accent: #C6486B;
+    --accent-3: #5C6E4F;
+    --border: rgba(43, 27, 36, 0.14);
+    --shadow: rgba(43, 27, 36, 0.10);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #221621;
+      --surface: #2C1E2A;
+      --ink: #F6EFE4;
+      --ink-soft: #C9B7C2;
+      --accent: #F0879E;
+      --accent-3: #90A88A;
+      --border: rgba(246, 239, 228, 0.16);
+      --shadow: rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #221621;
+    --surface: #2C1E2A;
+    --ink: #F6EFE4;
+    --ink-soft: #C9B7C2;
+    --accent: #F0879E;
+    --accent-3: #90A88A;
+    --border: rgba(246, 239, 228, 0.16);
+    --shadow: rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); font-family: 'Karla', sans-serif; }
+  body { display: flex; justify-content: center; padding: clamp(20px, 6vw, 56px) 16px; }
+  .page { width: 100%; max-width: 560px; }
+
+  .wordmark { text-align: center; margin-bottom: clamp(20px, 4vw, 32px); }
+  .wordmark .brand {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 500;
+    font-size: clamp(22px, 4vw, 26px); letter-spacing: 0.02em;
+  }
+  .wordmark .tagline { margin-top: 4px; font-size: 13px; color: var(--ink-soft); }
+
+  .card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: clamp(28px, 6vw, 44px) clamp(22px, 6vw, 40px);
+    box-shadow: 0 18px 40px -22px var(--shadow);
+  }
+  .card::before {
+    content: ""; position: absolute; top: -14px; left: 0; right: 0; height: 24px;
+    background-image: radial-gradient(circle at 10px 10px, var(--bg) 10px, transparent 11px);
+    background-size: 20px 20px; background-repeat: repeat-x;
+  }
+
+  .back-link {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    margin-bottom: 22px;
+  }
+  .back-link:hover { color: var(--ink); }
+
+  h1 {
+    font-family: 'Fraunces', serif; font-weight: 500; font-style: italic;
+    font-size: clamp(26px, 5.5vw, 32px); line-height: 1.2; margin: 0 0 6px;
+  }
+  .eyebrow { font-size: 13px; color: var(--ink-soft); margin: 0 0 24px; }
+
+  p.body-copy {
+    line-height: 1.75; font-size: 15.5px; margin: 0 0 20px;
+  }
+  p.body-copy strong { color: var(--accent); font-weight: 600; }
+
+  ul.stack {
+    list-style: none; padding: 0; margin: 0 0 24px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  ul.stack li {
+    display: flex; justify-content: space-between; gap: 12px;
+    padding: 10px 0; font-size: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  ul.stack li:last-child { border-bottom: none; }
+  ul.stack .label { color: var(--ink-soft); }
+
+  .cta-row { text-align: center; margin-top: 28px; }
+  .primary-btn {
+    display: inline-block; background: var(--accent); color: var(--surface);
+    border: none; border-radius: 999px; padding: 13px 28px;
+    font-family: 'Karla', sans-serif; font-weight: 600; font-size: 15px;
+    text-decoration: none; transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .primary-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+
+  .demo-note {
+    text-align: center; font-size: 11.5px; color: var(--ink-soft);
+    opacity: 0.75; margin-top: 22px; line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="wordmark">
+    <div class="brand">sister jane</div>
+    <div class="tagline">a little story, before you shop</div>
+  </div>
+
+  <div class="card">
+    <a class="back-link" href="index.html">&larr; Back to the quiz</a>
+
+    <p class="eyebrow">About this project</p>
+    <h1>The thinking behind the quiz</h1>
+
+    <p class="body-copy">
+      This is a concept piece — a customer-facing quiz exploring what an
+      AI-assisted feature could look like for a fashion brand like Sister
+      Jane, built to sit at the intersection of playful brand storytelling
+      and applied AI.
+    </p>
+
+    <p class="body-copy">
+      Every result starts from simple, <strong>reliable logic</strong>:
+      six answers, tallied against four style archetypes. Layered on top,
+      a short line of the result is rewritten live by Gemini, referencing
+      the shopper's actual choices, so two people rarely read quite the
+      same words. If that call doesn't come back for any reason, the quiz
+      still gives a complete, considered result — the AI is an
+      enhancement, never a dependency.
+    </p>
+
+    <ul class="stack">
+      <li><span class="label">Frontend</span><span>HTML, CSS, vanilla JS — no framework</span></li>
+      <li><span class="label">Backend</span><span>One Vercel serverless function</span></li>
+      <li><span class="label">AI</span><span>Google Gemini API</span></li>
+      <li><span class="label">Hosting</span><span>Vercel</span></li>
+    </ul>
+
+    <p class="body-copy" style="margin-bottom:0;">
+      <!-- Optional: add your name / portfolio / GitHub link here, e.g.
+      Built by <a href="https://your-portfolio.example">Your Name</a> —
+      <a href="https://github.com/your-username/your-repo">source on GitHub</a>. -->
+    </p>
+
+    <div class="cta-row">
+      <a class="primary-btn" href="index.html">Take the quiz</a>
+    </div>
+  </div>
+
+  <p class="demo-note">
+    A concept demo — not an official Sister Jane experience.
+  </p>
+</div>
+
+</body>
+</html>
