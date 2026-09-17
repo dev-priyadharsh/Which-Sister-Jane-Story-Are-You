@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Sister Jane Story Are You?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================================================
+     DESIGN TOKENS
+     Light palette lives on :root. Dark palette is layered on for
+     the viewer's OS setting. Change the hex values here to retint
+     the whole page in one place.
+     ============================================================ */
+  :root {
+    --bg: #F6EFE4;
+    --surface: #FFFBF3;
+    --ink: #2B1B24;
+    --ink-soft: #6B5560;
+    --accent: #C6486B;
+    --accent-2: #E29A2E;
+    --accent-3: #5C6E4F;
+    --border: rgba(43, 27, 36, 0.14);
+    --shadow: rgba(43, 27, 36, 0.10);
+
+    --tag-maven: #C97A4A;
+    --tag-romantic: #C97C94;
+    --tag-velvet: #8B5A8F;
+    --tag-dreamer: #6E8B6A;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #221621;
+      --surface: #2C1E2A;
+      --ink: #F6EFE4;
+      --ink-soft: #C9B7C2;
+      --accent: #F0879E;
+      --accent-2: #F0B24E;
+      --accent-3: #90A88A;
+      --border: rgba(246, 239, 228, 0.16);
+      --shadow: rgba(0, 0, 0, 0.35);
+
+      --tag-maven: #E0996A;
+      --tag-romantic: #E0A0B4;
+      --tag-velvet: #B084B4;
+      --tag-dreamer: #93B08C;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #221621;
+    --surface: #2C1E2A;
+    --ink: #F6EFE4;
+    --ink-soft: #C9B7C2;
+    --accent: #F0879E;
+    --accent-2: #F0B24E;
+    --accent-3: #90A88A;
+    --border: rgba(246, 239, 228, 0.16);
+    --shadow: rgba(0, 0, 0, 0.35);
+
+    --tag-maven: #E0996A;
+    --tag-romantic: #E0A0B4;
+    --tag-velvet: #B084B4;
+    --tag-dreamer: #93B08C;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Karla', sans-serif;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    padding: clamp(20px, 6vw, 56px) 16px;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  /* ---------- Wordmark header ---------- */
+  .wordmark {
+    text-align: center;
+    margin-bottom: clamp(20px, 4vw, 32px);
+  }
+  .wordmark .brand {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(22px, 4vw, 26px);
+    letter-spacing: 0.02em;
+  }
+  .wordmark .tagline {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  /* ---------- Card shell ---------- */
+  .card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: clamp(28px, 6vw, 44px) clamp(22px, 6vw, 40px);
+    box-shadow: 0 18px 40px -22px var(--shadow);
+    overflow: hidden;
+  }
+
+  /* scalloped edge along the top of the card, drawn once in CSS */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -14px;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background-image: radial-gradient(circle at 10px 10px, var(--bg) 10px, transparent 11px);
+    background-size: 20px 20px;
+    background-repeat: repeat-x;
+  }
+
+  /* ---------- Progress ---------- */
+  .progress {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: clamp(22px, 5vw, 30px);
+  }
+  .progress .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .progress .dot.done { background: var(--accent-3); }
+  .progress .dot.current { background: var(--accent); transform: scale(1.35); }
+
+  /* ---------- Screens ---------- */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp 0.4s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h1.intro-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(28px, 6vw, 36px);
+    line-height: 1.15;
+    text-align: center;
+    margin: 0 0 14px;
+  }
+  .intro-copy {
+    text-align: center;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    max-width: 40ch;
+    margin: 0 auto 28px;
+    font-size: 15px;
+  }
+
+  .question-text {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(20px, 4.4vw, 25px);
+    line-height: 1.3;
+    text-align: center;
+    margin: 0 0 26px;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--ink);
+    font-family: 'Karla', sans-serif;
+    font-size: 15px;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  }
+  .option:hover {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 7%, transparent);
+  }
+  .option:active { transform: scale(0.99); }
+  .option .swatch {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 22px;
+  }
+  .text-btn {
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-family: 'Karla', sans-serif;
+    font-size: 13px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    padding: 6px;
+  }
+  .text-btn:hover { color: var(--ink); }
+
+  .primary-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--surface);
+    border: none;
+    border-radius: 999px;
+    padding: 13px 28px;
+    font-family: 'Karla', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .primary-btn:hover { transform: translateY(-1px); opacity: 0.92; }
+  .primary-btn:active { transform: translateY(0); }
+
+  /* ---------- Result screen ---------- */
+  .petals { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .petal {
+    position: absolute;
+    top: -20px;
+    font-size: 14px;
+    opacity: 0.8;
+    animation: drift 4.5s linear forwards;
+  }
+  @keyframes drift {
+    to { transform: translateY(420px) rotate(200deg); opacity: 0; }
+  }
+
+  .result-eyebrow {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0 0 6px;
+  }
+  .result-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: clamp(26px, 6vw, 34px);
+    text-align: center;
+    color: var(--accent);
+    margin: 0 0 18px;
+    line-height: 1.15;
+  }
+  .result-copy {
+    text-align: center;
+    line-height: 1.7;
+    font-size: 15.5px;
+    max-width: 42ch;
+    margin: 0 auto 18px;
+  }
+  .ai-status {
+    text-align: center;
+    font-size: 12px;
+    font-style: italic;
+    color: var(--ink-soft);
+    min-height: 16px;
+    margin: 0 0 14px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .ai-status.visible { opacity: 0.85; }
+  .result-edit {
+    text-align: center;
+    font-size: 14px;
+    color: var(--ink-soft);
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+  .result-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 26px;
+  }
+
+  .edit-note {
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+    min-height: 18px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .edit-note.visible { opacity: 1; }
+
+  .demo-note {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    opacity: 0.75;
+    margin-top: 22px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="wordmark">
+    <div class="brand">sister jane</div>
+    <div class="tagline">a little story, before you shop</div>
+  </div>
+
+  <div class="card">
+    <div class="progress" id="progress"></div>
+
+    <!-- Intro screen -->
+    <section class="screen active" id="screen-intro">
+      <h1 class="intro-title">Which Sister Jane story are you?</h1>
+      <p class="intro-copy">
+        Six quick questions, no right answers. We'll match you to one of
+        this season's four characters &mdash; and the edit that goes with her.
+      </p>
+      <div style="text-align:center;">
+        <button class="primary-btn" onclick="startQuiz()">Find my story</button>
+      </div>
+    </section>
+
+    <!-- Question screens get built into here by JS -->
+    <section class="screen" id="screen-question">
+      <p class="question-text" id="question-text"></p>
+      <div class="options" id="question-options"></div>
+      <div class="nav-row">
+        <button class="text-btn" onclick="goBack()" id="back-btn">Back</button>
+      </div>
+    </section>
+
+    <!-- Result screen -->
+    <section class="screen" id="screen-result">
+      <div class="petals" id="petals"></div>
+      <p class="result-eyebrow">Your story is</p>
+      <h2 class="result-name" id="result-name"></h2>
+      <p class="result-copy" id="result-copy"></p>
+      <p class="ai-status" id="ai-status"></p>
+      <p class="result-edit" id="result-edit"></p>
+      <div class="result-actions">
+        <button class="primary-btn" onclick="showEditNote()">See my edit</button>
+        <button class="text-btn" onclick="startQuiz()">Play again</button>
+      </div>
+      <p class="edit-note" id="edit-note" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <p class="demo-note">
+    A concept demo built for a job application &mdash; not an official Sister Jane experience.
+    Your result's story line is generated live, personalized to your actual answers.
+  </p>
+</div>
+
+<script>
+/* ============================================================
+   CONTENT
+   Everything editable about the quiz lives in these two objects.
+   Add a question by copying the shape below; add an archetype the
+   same way. Each option's "tag" must match one of the ARCHETYPES keys.
+   ============================================================ */
+
+const QUESTIONS = [
+  {
+    text: "Your ideal Saturday starts with…",
+    options: [
+      { text: "Rummaging the market stalls for a one-of-a-kind find", tag: "maven" },
+      { text: "Tea in the garden and a book that smells like someone else's attic", tag: "romantic" },
+      { text: "Last night's sequins, making toast at noon", tag: "velvet" },
+      { text: "Wellies, a thermos, and more sheep than people", tag: "dreamer" }
+    ]
+  },
+  {
+    text: "Pick a texture.",
+    options: [
+      { text: "Cracked leather and old brass buttons", tag: "maven" },
+      { text: "Broderie anglaise, still slightly damp with dew", tag: "romantic" },
+      { text: "Velvet that catches the light from three rooms away", tag: "velvet" },
+      { text: "Cotton lawn, soft from a hundred washes", tag: "dreamer" }
+    ]
+  },
+  {
+    text: "A stranger asks where you got your outfit. You say…",
+    options: [
+      { text: '"Found it. Long story."', tag: "maven" },
+      { text: '"My grandmother\'s, more or less."', tag: "romantic" },
+      { text: '"I made an entrance in it once and never looked back."', tag: "velvet" },
+      { text: '"Somewhere between a hedgerow and a haberdashery."', tag: "dreamer" }
+    ]
+  },
+  {
+    text: "Your camera roll is mostly…",
+    options: [
+      { text: "Odd little shops and things you almost bought", tag: "maven" },
+      { text: "Flowers you stopped to photograph", tag: "romantic" },
+      { text: "Blurry, glamorous, taken after 11pm", tag: "velvet" },
+      { text: "The sky, several fields, one cow", tag: "dreamer" }
+    ]
+  },
+  {
+    text: "Pick a soundtrack for getting ready.",
+    options: [
+      { text: "Something crackly, found on a record you didn't recognise", tag: "maven" },
+      { text: "A song your mum used to hum", tag: "romantic" },
+      { text: "Anything with strings and a key change", tag: "velvet" },
+      { text: "Birdsong, honestly, or nothing at all", tag: "dreamer" }
+    ]
+  },
+  {
+    text: "Today's forecast is…",
+    options: [
+      { text: "Unpredictable, with a chance of finding something", tag: "maven" },
+      { text: "Soft light, slightly overexposed", tag: "romantic" },
+      { text: "Warm and a little too bright, like the chandelier's on", tag: "velvet" },
+      { text: "Clear skies, a breeze, somewhere green", tag: "dreamer" }
+    ]
+  }
+];
+
+const ARCHETYPES = {
+  maven: {
+    name: "The Golborne Market Maven",
+    copy: "You're drawn to the unrepeatable — a jacket with someone else's history stitched into the lining, a print that clashes on purpose. A new capsule drops every six weeks because nothing sits still long enough to feel ordinary, and neither do you.",
+    edit: "Your edit: bold prints, mismatched gold, one statement piece worn like it's nothing."
+  },
+  romantic: {
+    name: "The Rose Garden Romantic",
+    copy: "Peter Pan collars, ditsy florals, a hem that moves before you do. You'd rather look like a memory than a trend.",
+    edit: "Your edit: soft florals, puff sleeves, something that would survive being twirled in."
+  },
+  velvet: {
+    name: "The Velvet Hour Nostalgic",
+    copy: "Never the quiet one. You dress for the version of tonight that gets talked about tomorrow.",
+    edit: "Your edit: sequins, statement sleeves, something that catches the light on the way out the door."
+  },
+  dreamer: {
+    name: "The Countryside Dreamer",
+    copy: "Floaty fabrics, soft palettes, a wardrobe that smells faintly of somewhere better. You're happiest slightly out of breath and a little sunburnt.",
+    edit: "Your edit: cotton lawn, picnic-ready prints, something with room to breathe."
+  }
+};
+
+const TAG_COLOR_VAR = {
+  maven: "--tag-maven",
+  romantic: "--tag-romantic",
+  velvet: "--tag-velvet",
+  dreamer: "--tag-dreamer"
+};
+
+/* ============================================================
+   AI PERSONALIZATION (an optional layer on top of the static copy)
+   Calls our own /api/personalize serverless function (see api/personalize.js),
+   which asks Gemini for a short, answer-aware rewrite of the result text.
+   The Gemini key lives only on the server — this file never sees it.
+   If the request fails for any reason, the catch block fires and the
+   static ARCHETYPES copy that showResult() already rendered is simply
+   left on screen. The page never depends on this succeeding.
+   ============================================================ */
+async function personalizeStory(winnerKey, chosenAnswers) {
+  const statusEl = document.getElementById("ai-status");
+  const copyEl = document.getElementById("result-copy");
+  statusEl.textContent = "Personalizing your story…";
+  statusEl.classList.add("visible");
+
+  try {
+    const response = await fetch("/api/personalize", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        winnerName: ARCHETYPES[winnerKey].name,
+        answers: chosenAnswers.map(a => a.text)
+      })
+    });
+
+    if (!response.ok) throw new Error("personalize request failed");
+    const data = await response.json();
+    if (!data.text) throw new Error("no text in response");
+
+    copyEl.textContent = data.text;
+    statusEl.textContent = "Written live, just for you.";
+    setTimeout(() => statusEl.classList.remove("visible"), 2200);
+  } catch (err) {
+    statusEl.classList.remove("visible"); // quietly keep the static fallback copy already on screen
+  }
+}
+
+/* ============================================================
+   STATE + RENDER
+   ============================================================ */
+let currentQuestion = 0;
+let answers = []; // stores {tag, text} for each question — the text is what we hand to Claude later
+
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function renderProgress() {
+  const el = document.getElementById("progress");
+  el.innerHTML = "";
+  if (currentQuestion < 0) return; // intro screen: no dots
+  QUESTIONS.forEach((_, i) => {
+    const dot = document.createElement("div");
+    dot.className = "dot" + (i < currentQuestion ? " done" : i === currentQuestion ? " current" : "");
+    el.appendChild(dot);
+  });
+}
+
+function startQuiz() {
+  currentQuestion = 0;
+  answers = [];
+  renderQuestion();
+  showScreen("screen-question");
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[currentQuestion];
+  document.getElementById("question-text").textContent = q.text;
+
+  const optionsEl = document.getElementById("question-options");
+  optionsEl.innerHTML = "";
+  q.options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "option";
+    btn.innerHTML =
+      '<span class="swatch" style="background:var(' + TAG_COLOR_VAR[opt.tag] + ')"></span>' +
+      '<span>' + opt.text + '</span>';
+    btn.onclick = () => selectOption(opt.tag, opt.text);
+    optionsEl.appendChild(btn);
+  });
+
+  document.getElementById("back-btn").style.visibility = currentQuestion === 0 ? "hidden" : "visible";
+  renderProgress();
+}
+
+function selectOption(tag, text) {
+  answers[currentQuestion] = { tag, text };
+  if (currentQuestion < QUESTIONS.length - 1) {
+    currentQuestion++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function goBack() {
+  if (currentQuestion === 0) return;
+  currentQuestion--;
+  renderQuestion();
+}
+
+function showResult() {
+  const tally = {};
+  answers.forEach(a => { tally[a.tag] = (tally[a.tag] || 0) + 1; });
+
+  let winner = answers[0].tag;
+  let best = 0;
+  Object.keys(tally).forEach(tag => {
+    if (tally[tag] > best) { best = tally[tag]; winner = tag; }
+  });
+
+  const result = ARCHETYPES[winner];
+  document.getElementById("result-name").textContent = result.name;
+  document.getElementById("result-copy").textContent = result.copy; // static fallback, shown immediately
+  document.getElementById("result-edit").textContent = result.edit;
+
+  currentQuestion = -1;
+  document.getElementById("progress").innerHTML = "";
+  showScreen("screen-result");
+  spawnPetals();
+
+  personalizeStory(winner, answers); // swap in a live, answer-aware version when the capability allows it
+}
+
+function showEditNote() {
+  const note = document.getElementById("edit-note");
+  note.textContent = "In the real version, this would open the matching capsule edit on sisterjane.com.";
+  note.classList.add("visible");
+}
+
+/* One small orchestrated flourish on reveal — a handful of petals drift down once. */
+function spawnPetals() {
+  const host = document.getElementById("petals");
+  host.innerHTML = "";
+  const glyphs = ["❀", "✿", "❁"];
+  for (let i = 0; i < 10; i++) {
+    const p = document.createElement("span");
+    p.className = "petal";
+    p.textContent = glyphs[i % glyphs.length];
+    p.style.left = (5 + Math.random() * 90) + "%";
+    p.style.animationDelay = (Math.random() * 0.8) + "s";
+    p.style.color = "var(--accent)";
+    host.appendChild(p);
+  }
+}
+</script>
+</body>
+</html>

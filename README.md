@@ -1,103 +1,101 @@
-# Which Sister Jane Story Are You? 🌷
+# Which Sister Jane Story Are You?
 
-An interactive style quiz concept for [Sister Jane](https://www.sisterjane.com), a
-London fashion brand — built as a portfolio piece exploring AI-personalized
-customer experiences for fashion e-commerce.
+A concept interactive style quiz, built as a portfolio piece for an
+"AI Creative Technologist" job application. Answers feed into a small
+Gemini-powered rewrite of the result text, so no two results read
+quite the same.
 
-Answer six whimsical questions and get matched to one of four style
-archetypes. The result includes a short story rewritten live by Gemini,
-so it references your specific answers rather than reading like a
-generic template.
+## What's in this folder
 
-**Not affiliated with or endorsed by Sister Jane.** This is a concept
-demo, not a live production feature.
+```
+index.html          the whole quiz — one file, no build step
+api/personalize.js   a small serverless function that talks to Gemini
+package.json         tells Vercel this project uses ES modules
+.env.example          template for the one secret this needs
+```
 
-## How it works
+There's nothing to `npm install` — `api/personalize.js` uses the
+`fetch` that's already built into Node 18+, which is what Vercel runs.
 
-1. Six multiple-choice questions, each option tagged to one of four
-   archetypes (`maven`, `romantic`, `velvet`, `dreamer`).
-2. A simple tally decides which archetype the answers point to most —
-   this part is deterministic and always works, no external service
-   involved.
-3. That result, plus the shopper's specific answer text, gets sent to
-   a small serverless function, which asks Gemini to rewrite the result
-   copy so it references a real detail from their answers.
-4. If that request fails for any reason (missing key, rate limit,
-   network issue), the page silently keeps the static — still
-   perfectly good — result text instead of breaking. The AI layer is
-   an enhancement, never a dependency.
+## 1. Get a Gemini API key
 
-## Tech stack
+1. Go to [Google AI Studio](https://aistudio.google.com/apikey) and
+   sign in with a Google account.
+2. Create an API key. Copy it somewhere safe — you won't paste it
+   into any file in this project, only into Vercel's dashboard (step 4).
 
-| Layer | What's used |
+## 2. Push this folder to GitHub
+
+If your friend hasn't done this before: create a new repository on
+GitHub, then from inside this folder:
+
+```bash
+git init
+git add .
+git commit -m "Sister Jane story quiz"
+git branch -M main
+git remote add origin <your-new-repo-url>
+git push -u origin main
+```
+
+## 3. Import into Vercel
+
+1. Go to [vercel.com/new](https://vercel.com/new) and sign in.
+2. Import the GitHub repo you just pushed.
+3. Leave the build settings as Vercel suggests them — this project
+   has no build step, so the defaults are fine. Don't deploy yet.
+
+## 4. Add the API key
+
+Before hitting Deploy: go to **Project Settings → Environment
+Variables** and add:
+
+| Name | Value |
 |---|---|
-| Frontend | Plain HTML/CSS/JavaScript — no framework, no build step |
-| Backend | One Vercel serverless function (Node.js, ES modules) |
-| AI | Google Gemini API |
-| Hosting | Vercel |
+| `GEMINI_API_KEY` | the key you copied in step 1 |
 
-## Project structure
+`GEMINI_MODEL` is optional — only add it if you want to pin a
+specific model name (see the note in `.env.example`).
 
-```
-.
-├── index.html          the quiz — markup, styling, and client logic
-├── api/
-│   └── personalize.js  serverless function that calls Gemini
-├── package.json         marks this as an ES module project
-├── .env.example          template for the one required secret
-└── .gitignore
-```
+## 5. Deploy
 
-## Running it locally
+Click **Deploy**. Vercel will serve `index.html` as the site and turn
+`api/personalize.js` into a live endpoint at `/api/personalize`
+automatically — that's just how Vercel treats anything in an `/api`
+folder, no extra config file needed.
 
-You'll need [Node.js](https://nodejs.org) 18+ and the Vercel CLI.
+## Testing locally before you deploy
+
+Opening `index.html` directly in a browser will run the quiz, but the
+"personalize" step will fail quietly (there's no server to answer
+`/api/personalize`) — that's expected, it's the same graceful fallback
+that keeps the static result text on screen. To test the AI part
+locally:
 
 ```bash
-npm i -g vercel
+npm i -g vercel      # one-time
 vercel login
-```
-
-Copy the env template and add a real key (get one free at
-[Google AI Studio](https://aistudio.google.com/apikey)):
-
-```bash
-cp .env.example .env.local
-# then edit .env.local and paste your key in place of your_key_here
-```
-
-Start the dev server:
-
-```bash
 vercel dev
 ```
 
-Open the URL it prints (usually `http://localhost:3000`) and run
-through the quiz.
+Then create a `.env.local` (copy `.env.example` and fill in the real
+key) — `vercel dev` reads it automatically.
 
-> A plain double-click on `index.html`, or a Live Server extension,
-> will show the quiz fine but can't run `api/personalize.js` — you'll
-> just see the static fallback text instead of the live version. Use
-> `vercel dev` if you want to test the AI part.
+## If Gemini requests start failing after this is deployed
 
-## Deploying to Vercel
+Google renames and retires Gemini model IDs more often than you'd
+expect. If `api/personalize.js` starts returning errors, the model
+name in `GEMINI_MODEL` (or the default in the code) is the first thing
+to check against Google's current model list at
+https://ai.google.dev/gemini-api/docs/models — swap in whatever the
+current stable Flash model is called.
 
-1. Push this repo to GitHub.
-2. Import it at [vercel.com/new](https://vercel.com/new).
-3. Before deploying, go to **Project Settings → Environment
-   Variables** and add `GEMINI_API_KEY` with your key.
-4. Deploy. Vercel serves `index.html` as the site and automatically
-   turns `api/personalize.js` into a live endpoint at
-   `/api/personalize` — no extra config needed.
+## A note on what's real here
 
-## Environment variables
-
-| Variable | Required | Purpose |
-|---|---|---|
-| `GEMINI_API_KEY` | Yes | Authenticates requests to the Gemini API |
-| `GEMINI_MODEL` | No | Overrides the model name (default: `gemini-3.1-flash-lite`) without touching code |
-
-Google renames and retires Gemini model IDs fairly often. If requests
-to `/api/personalize` start failing after working before, check the
-current model list at
-[ai.google.dev/gemini-api/docs/models](https://ai.google.dev/gemini-api/docs/models)
-and set `GEMINI_MODEL` accordingly.
+The quiz logic, questions, and archetypes are entirely self-contained
+and always work. The personalized story line is the one part that
+depends on an external service (Gemini) and a small amount of spend —
+if the API key is missing, invalid, or the request fails for any
+reason, the page shows the static (still good) result copy instead of
+breaking. That fallback is a deliberate design choice, not a bug — it's
+worth pointing out in an interview if this project comes up.

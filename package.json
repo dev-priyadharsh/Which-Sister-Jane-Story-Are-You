@@ -1,0 +1,9 @@
+{
+  "name": "sister-jane-story-quiz",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}
